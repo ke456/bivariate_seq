@@ -45,8 +45,20 @@ Vec<zz_p> get_init(const long& n, const zz_pX &num, const zz_pX &den){
    return init;
 }
 
-bivariate_lin_seq::bivariate_lin_seq(const Vec<zz_pX>& num,Vec<zz_pX>& den, int d1, int d2): 
-polX_num{num}, polX_den{den},d1{d1},d2{d2}{}
+bivariate_lin_seq::bivariate_lin_seq(const Vec<Vec<long>>& num,Vec<Vec<long>>& den, int d1, int d2): 
+num_coeffs{num}, den_coeffs{den},d1{d1},d2{d2}{}
+
+void create_poly(Vec<zz_pX> &res, const Vec<Vec<long>> &coeffs){
+    res.SetLength(coeffs.length());
+
+    for (long i = 0; i < coeffs.length(); i++){
+        zz_pX tmp;
+        for (long j = 0; j < coeffs[i].length(); j++){
+            SetCoeff(tmp,j,zz_p(coeffs[i][j]));
+        }
+        res[i] = tmp;
+    }
+}
 
 void bivariate_lin_seq::eval_x(zz_pX &res, const zz_p& x, const Vec<zz_pX> &poly){
     for (int i = 0; i < poly.length(); i++){
@@ -65,10 +77,10 @@ void bivariate_lin_seq::find_row(zz_pX &num, zz_pX &den, const long& D){
     pointsX.SetLength(degree);
     pointsY.SetLength(degree);
     
-    zz_pContext context;
-    context.save();
-//NTL_EXEC_RANGE(degree,first,last)
-//    context.restore(); // now all threads have the right zz_p context
+    Vec<zz_pX> polX_num, polX_den;
+    
+    create_poly(polX_num, num_coeffs);
+    create_poly(polX_den, den_coeffs);
     
     for (long i = 0; i < degree; i++){
         zz_pX eval_num;
@@ -89,15 +101,66 @@ void bivariate_lin_seq::find_row(zz_pX &num, zz_pX &den, const long& D){
         pointsX[i] = (x_i - zz_p(1));
         pointsY[i] = (rp*p_pow);
     }
-//NTL_EXEC_RANGE_END
     
     // interpolate
     interpolate(num, pointsX, pointsY);
     power(den,polX_den[0],D+1);
 }
 
+void bivariate_lin_seq::get_entry_sq_ZZ 
+                        (Vec<ZZ> &entries_num, 
+                         Vec<ZZ> &entries_den,
+                         const long a, 
+                         const long b, 
+                         const long L,
+                         const long nbits,
+                         const long steps){
+     Vec<long> primes;
+     primes.SetLength(steps);
+     
+     long init_prime = GenPrime_long(nbits);
+     primes[0] = init_prime;
+     
+     Vec<Vec<Vec<zz_p>>> coeffs;
+     coeffs.SetLength(steps);
+     
+     for (long i = 1; i < steps; i++){
+        primes[i] = NextPrime(primes[i-1]+1);
+     }
+        
+    for (long i = 0; i < steps; i++){
+        cout << "prime: " << primes[i] << endl;
+        zz_p::init(primes[i]);
+    
+        zz_pX n,d;
+        
+        coeffs[i].SetLength(2*L+1);
+        long at_D = 0;
+        for (long D = b-L; D < b+L+1; D++, at_D++){
+            find_row(n,d,D);
+            cout << "D: " << D << endl;
+            cout << "n: " << n << endl;
+            cout << "d: " << d << endl;
+            Vec<zz_p> init = get_init(deg(d), n, d);
+            coeffs[i][at_D].SetLength(2*L+1);
+            
+             long at_N = 0;
+            for (long N = a-L; N < a+L+1; N++, at_N++)
+                coeffs[i][at_D][at_N] = get_elem(N, reverse(d), init);
+            
+            cout << "coeffs[" << i << "][" << at_D << "]=" 
+                 << coeffs[i][at_D] << endl;
+            
+        }   
+        cout << endl;     
+    }
+    
+     
+}
 
-// g++ -std=c++14 *.cpp -lntl -lgmp -lm -lpthread -march=native
+
+
+// g++ -std=c++14 *.cpp -g -lntl -lgmp -lm -lpthread -march=native
 
 
 

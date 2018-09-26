@@ -6,41 +6,39 @@ NTL_CLIENT
 
 int main(){
     // set this to be the prime you want to work over
-    zz_p::init(2013265921);
+    zz_p::init(13);
     SetNumThreads(4);
     
     // D should be less than the char of the field due to interpolation
     long D = 8000;
     
     // this are "bivariate" polynomials
-    Vec<zz_pX> num;
-    Vec<zz_pX> den;
-    zz_pX P;
+    Vec<Vec<long>> num;
+    Vec<Vec<long>> den;
     
+    Vec<long> tmp;
     /**** NUMERATOR ********************************/
     // encode num: 1-x
-    SetCoeff(P,0,1);
-    SetCoeff(P,1,-1);
-    num.append(P);
-    
-    P = zz_pX(0);
+    tmp.append(1); tmp.append(-1);
+    num.append(tmp);
+    tmp = Vec<long>();
     
     /**** DENOMINATOR *******************************/
     // encode den: (1+x)^2 + (-x)y + y^2
     
     // (1+x)^2
-    SetCoeff(P,0,1);
-    SetCoeff(P,1,2);
-    SetCoeff(P,2,1);
-    den.append(P); P=zz_pX(0);
+    tmp.append(1); tmp.append(2); tmp.append(1);
+    den.append(tmp);
+    tmp = Vec<long>();
     
     // (-x)
-    SetCoeff(P,1,-1);
-    den.append(P); P=zz_pX(0);
+    tmp.append(0); tmp.append(-1);
+    den.append(tmp); 
+    tmp = Vec<long>();
     
     // 1
-    SetCoeff(P,0,1);
-    den.append(P);
+    tmp.append(1);
+    den.append(tmp);
     
     cout << "num: " << num << endl;
     cout << "den: " << den << endl;
@@ -48,12 +46,37 @@ int main(){
     // this creates the object
     bivariate_lin_seq bls{num,den,2,2};
     
-    zz_pX n,d; // this is num/den for the output
-    double t = GetTime();
-    bls.find_row(n,d,D);
-    cout << "time: " << GetTime() - t << endl;
-    //cout << "D: " << D << endl;
-    //cout << "n: " << n << endl;
-    //cout << "d: " << d << endl;
+    long a = 5;
+    long b = 5;
+    long L = 1;
+    
+    cout << "a: " << a << endl;
+    cout << "b: " << b << endl;
+    cout << "L: " << L << endl;
+    
+    Vec<ZZ> enZZ, edZZ;
+    bls.get_entry_sq_ZZ(enZZ,edZZ,a,b,L,10,3);
+
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
