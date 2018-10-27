@@ -225,10 +225,7 @@ void bivariate_lin_seq::get_entry_sq_ZZ_geometric
 
         coeffs[i].SetLength(2*L+1);
         long at_D = 0;
-        cout << "step: " << i << endl;
-        cout << "cur mod: " << cur_modulus << endl;
-        cout << "prime: " << primes[i] << endl;
-
+				cout << "prime: " << primes[i] << endl;
         for (long D = b-L; D < b+L+1; D++, at_D++){
             find_row_geometric(n,d,D);
             //cout << "D: " << D << endl;
@@ -243,7 +240,6 @@ void bivariate_lin_seq::get_entry_sq_ZZ_geometric
                 auto temp_cur_modulus = cur_modulus;
                 coeffs[i][at_D][at_N] = get_elem(N, reverse(d), init);
                 long A = rep(coeffs[i][at_D][at_N]);
-                cout << "A: " << A << endl;
                 if (cur_modulus == ZZ(1)){
                     entries[at_D][at_N] = A;
                 }else{
