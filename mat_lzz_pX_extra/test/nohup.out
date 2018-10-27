@@ -1,0 +1,10 @@
+if test -e test_multiply.cpp; then g++ -o test_multiply test_multiply.cpp ../../lib/lzz_p_extra.o ../../lib/lzz_pX_CRT.o ../../lib/lzz_pX_extra.o ../../lib/lzz_pX_middle_product.o ../../lib/lzz_pX_Multipoint_FFT.o ../../lib/lzz_pX_Multipoint_General.o ../../lib/lzz_pX_Multipoint_Geometric.o ../../lib/lzz_pX_Multipoint.o ../../lib/lzz_pX_Transform_montgomery.o ../../lib/lzz_pX_Transform_naive.o ../../lib/lzz_pX_Transform.o ../../lib/magma_output.o ../../lib/mat_lzz_pX_approximant.o ../../lib/mat_lzz_pX_extra.o ../../lib/mat_lzz_pX_multiply_3_primes.o ../../lib/mat_lzz_pX_multiply_evaluate.o ../../lib/mat_lzz_pX_multiply_naive.o ../../lib/mat_lzz_pX_multiply_transform.o ../../lib/sage_output.o ../../lib/vec_lzz_p_extra.o -Wall -std=c++11 -O3 -march=native -I../../include -lntl -lpthread -lgmp -lm; fi
+./script: line 1200: 13342 Killed                  ./test_multiply 400 3000 >> test.csv
+./script: line 1201: 13744 Killed                  ./test_multiply 400 4000 >> test.csv
+./script: line 1239: 15131 Killed                  ./test_multiply 500 2000 >> test.csv
+./script: line 1240: 17107 Killed                  ./test_multiply 500 3000 >> test.csv
+./script: line 1241: 17443 Killed                  ./test_multiply 500 4000 >> test.csv
+./script: line 1279: 30452 Killed                  ./test_multiply 600 2000 >> test.csv
+./script: line 1280: 32498 Killed                  ./test_multiply 600 3000 >> test.csv
+./script: line 1281: 32672 Killed                  ./test_multiply 600 4000 >> test.csv
+./script: line 1314:  2238 Killed                  ./test_multiply 700 600 >> test.csv
