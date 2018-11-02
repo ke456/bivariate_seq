@@ -27,7 +27,8 @@ void repeated_sq_mod(zz_pX &result, const zz_pX &p,
 }
 
 zz_p get_elem (const long& D, const zz_pX &P, const Vec<zz_p>& init){
-    zz_pX mod;
+    if (D < init.length()) return zz_p(init[D]);
+		zz_pX mod;
     SetCoeff(mod,1,1);
     repeated_sq_mod(mod, mod, P, D);
     zz_p result{0};
@@ -70,7 +71,8 @@ void bivariate_lin_seq::eval_x(zz_pX &res, const zz_p& x, const Vec<zz_pX> &poly
 }
 
 void bivariate_lin_seq::find_row(zz_pX &num, zz_pX &den, const long& D){
-    long degree = (D+1) * d1; // total degree on the bottom
+    /*
+		long degree = (D+1) * d1; // total degree on the bottom
     zz_p x_i = zz_p(0);
     Vec<zz_p> pointsX;
     Vec<zz_p> pointsY;
@@ -83,7 +85,7 @@ void bivariate_lin_seq::find_row(zz_pX &num, zz_pX &den, const long& D){
     create_poly(polX_num, num_coeffs);
     create_poly(polX_den, den_coeffs);
 
-    for (long i = 0; i < degree; i++){
+		for (long i = 0; i < degree; i++){
         zz_pX eval_num;
         zz_pX eval_den;
         do{
@@ -94,18 +96,18 @@ void bivariate_lin_seq::find_row(zz_pX &num, zz_pX &den, const long& D){
 
         // find initial conditions
         Vec<zz_p> init = get_init(d2,eval_num,eval_den);
-
         // find the point
         auto rp = get_elem(D,reverse(eval_den),init);
         auto p_pow = power(ConstTerm(eval_den), D+1);
 
         pointsX[i] = (x_i - zz_p(1));
         pointsY[i] = (rp*p_pow);
-    }
+   }
 
     // interpolate
     interpolate(num, pointsX, pointsY);
     power(den,polX_den[0],D+1);
+		*/
 }
 
 void bivariate_lin_seq::find_row_geometric(zz_pX &num, zz_pX &den, const long &D){
@@ -125,7 +127,7 @@ void bivariate_lin_seq::find_row_geometric(zz_pX &num, zz_pX &den, const long &D
     Vec<zz_pX> polX_num, polX_den;
     create_poly(polX_num, num_coeffs);
     create_poly(polX_den, den_coeffs);
-
+		
     for (long i = 0; i < degree; i++){
         zz_pX eval_num, eval_den;
         eval_x(eval_num, pointsX[i], polX_num);
@@ -149,7 +151,8 @@ void bivariate_lin_seq::get_entry_sq_ZZ
  const long L,
  const long nbits,
  const long steps){
-    Vec<long> primes;
+    /*
+		Vec<long> primes;
     primes.SetLength(steps);
 
     long init_prime = GenPrime_long(nbits);
@@ -172,9 +175,9 @@ void bivariate_lin_seq::get_entry_sq_ZZ
         long at_D = 0;
         for (long D = b-L; D < b+L+1; D++, at_D++){
             find_row(n,d,D);
-            //cout << "D: " << D << endl;
-            //cout << "n: " << n << endl;
-            //cout << "d: " << d << endl;
+            cout << "D: " << D << endl;
+            cout << "n: " << n << endl;
+            cout << "d: " << d << endl;
             Vec<zz_p> init = get_init(deg(d), n, d);
             coeffs[i][at_D].SetLength(2*L+1);
 
@@ -188,8 +191,7 @@ void bivariate_lin_seq::get_entry_sq_ZZ
         }   
         cout << endl;     
     }
-
-
+		*/
 }
 
 void bivariate_lin_seq::get_entry_sq_ZZ_geometric 
@@ -225,6 +227,7 @@ void bivariate_lin_seq::get_entry_sq_ZZ_geometric
 
         coeffs[i].SetLength(2*L+1);
         long at_D = 0;
+				bool changed = false;
 				cout << "prime: " << primes[i] << endl;
         for (long D = b-L; D < b+L+1; D++, at_D++){
             find_row_geometric(n,d,D);
@@ -243,14 +246,15 @@ void bivariate_lin_seq::get_entry_sq_ZZ_geometric
                 if (cur_modulus == ZZ(1)){
                     entries[at_D][at_N] = A;
                 }else{
-                  CRT(entries[at_D][at_N], temp_cur_modulus, A, primes[i]);
+                  auto temp = CRT(entries[at_D][at_N], temp_cur_modulus, A, primes[i]);
+									if (temp == 1) changed = true;
                 }
             }
-            //cout << "coeffs[" << i << "][" << at_D << "]=" 
-            //     << coeffs[i][at_D] << endl;
 
         }
-        cur_modulus *= primes[i] * cur_modulus;
+        cur_modulus = primes[i] * cur_modulus;
+				cout << "cur_mod: " << cur_modulus << endl;
+				cout << "changed? " << changed << endl;
     }
 
 
