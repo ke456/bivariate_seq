@@ -2,6 +2,7 @@
 #include "lzz_pX_CRT.h"
 #include <iostream>
 #include <NTL/BasicThreadPool.h>
+#include <stdexcept>
 
 Vec<int> get_binary(const long &t){
     Vec<int> result;
@@ -28,6 +29,7 @@ void repeated_sq_mod(zz_pX &result, const zz_pX &p,
 
 zz_p get_elem (const long& D, const zz_pX &P, const Vec<zz_p>& init){
     if (D < init.length()) return zz_p(init[D]);
+		if (init.length() < deg(P)) throw std::logic_error("not enough initial conditions");
 		zz_pX mod;
     SetCoeff(mod,1,1);
     repeated_sq_mod(mod, mod, P, D);
